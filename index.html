@@ -1,5 +1,7 @@
 #include <iostream>
 #include <string>
+#include <chrono>
+#include <thread>
 
 // Function to clear the console screen
 void clearScreen() {
@@ -19,9 +21,10 @@ int main() {
         std::cout << "          PASSWORD GAME        \n";
         std::cout << "==============================\n\n";
 
-        std::cout << "\033[1;37m"; // Set text color to white
         std::cout << "Attempts remaining: " << attemptsRemaining << "\n\n";
-        std::cout << "         Enter password       \n\n";
+
+        std::cout << "\033[1;31m"; // Set text color to red
+        std::cout << "      Enter password       \n\n";
 
         std::string userGuess;
         std::cout << "> ";
