@@ -1,35 +1,54 @@
-#include <fcgi_stdio.h>
+#include <iostream>
 #include <string>
 
-// Function to check the password
-bool checkPassword(const std::string& inputPassword) {
-    // Replace this with your actual password checking logic
-    std::string actualPassword = "securePassword";
-    return inputPassword == actualPassword;
+// Function to clear the console screen
+void clearScreen() {
+    std::cout << "\033[2J\033[H";
 }
 
 int main() {
-    while (FCGI_Accept() >= 0) {
-        // Read form data from the standard input
-        char *data;
-        std::string inputPassword;
-        while ((data = FCGI_GetParam("password", 0)) != NULL) {
-            inputPassword += data;
-        }
+    const std::string correctPassword = "CURSED";
+    int attemptsRemaining = 3;
+
+    while (attemptsRemaining > 0) {
+        clearScreen(); // Clear the console screen
+
+        // Display the interface
+        std::cout << "\033[1;31m"; // Set text color to red
+        std::cout << "==============================\n";
+        std::cout << "          PASSWORD GAME        \n";
+        std::cout << "==============================\n\n";
+
+        std::cout << "\033[1;37m"; // Set text color to white
+        std::cout << "Attempts remaining: " << attemptsRemaining << "\n\n";
+        std::cout << "         Enter password       \n\n";
+
+        std::string userGuess;
+        std::cout << "> ";
+        std::cin >> userGuess;
 
         // Check if the password is correct
-        if (checkPassword(inputPassword)) {
-            // Output the protected content
-            printf("Content-Type: text/html\r\n\r\n");
-            printf("<html><body><h1>Welcome to the protected area!</h1></body></html>");
+        if (userGuess == correctPassword) {
+            clearScreen();
+            std::cout << "\033[1;32m"; // Set text color to green
+            std::cout << "Congratulations! You guessed the correct password.\n";
+            break;
         } else {
-            // Output the login form
-            printf("Content-Type: text/html\r\n\r\n");
-            printf("<html><body><h1>Login</h1>");
-            printf("<form method='post' action='/path-to-cpp-program'>");
-            printf("Password: <input type='password' name='password'>");
-            printf("<input type='submit' value='Login'>");
-            printf("</form></body></html>");
+            attemptsRemaining--;
+
+            // Display remaining attempts
+            std::cout << "\033[1;33m"; // Set text color to yellow
+            std::cout << "\nIncorrect password. Attempts remaining: " << attemptsRemaining << "\n";
+
+            // Check if attempts are exhausted
+            if (attemptsRemaining == 0) {
+                clearScreen();
+                std::cout << "\033[1;31m"; // Set text color to red
+                std::cout << "Sorry, you've run out of attempts. The correct password was '" << correctPassword << "'.\n";
+            }
+
+            // Pause for a moment before clearing the screen
+            std::this_thread::sleep_for(std::chrono::seconds(1));
         }
     }
 
