@@ -1,35 +1,31 @@
-#include <fcgi_stdio.h>
+#include <iostream>
 #include <string>
 
-// Function to check the password
-bool checkPassword(const std::string& inputPassword) {
-    // Replace this with your actual password checking logic
-    std::string actualPassword = "securePassword";
-    return inputPassword == actualPassword;
-}
-
 int main() {
-    while (FCGI_Accept() >= 0) {
-        // Read form data from the standard input
-        char *data;
-        std::string inputPassword;
-        while ((data = FCGI_GetParam("password", 0)) != NULL) {
-            inputPassword += data;
-        }
+    const std::string correctPassword = "CURSED";
+    int attemptsRemaining = 3;
+
+    while (attemptsRemaining > 0) {
+        std::string userGuess;
+        
+        // Get user input
+        std::cout << "Enter the password: ";
+        std::cin >> userGuess;
 
         // Check if the password is correct
-        if (checkPassword(inputPassword)) {
-            // Output the protected content
-            printf("Content-Type: text/html\r\n\r\n");
-            printf("<html><body><h1>Welcome to the protected area!</h1></body></html>");
+        if (userGuess == correctPassword) {
+            std::cout << "Congratulations! You guessed the correct password.\n";
+            break;
         } else {
-            // Output the login form
-            printf("Content-Type: text/html\r\n\r\n");
-            printf("<html><body><h1>Login</h1>");
-            printf("<form method='post' action='/path-to-cpp-program'>");
-            printf("Password: <input type='password' name='password'>");
-            printf("<input type='submit' value='Login'>");
-            printf("</form></body></html>");
+            attemptsRemaining--;
+
+            // Display remaining attempts
+            std::cout << "Incorrect password. Attempts remaining: " << attemptsRemaining << "\n";
+
+            // Check if attempts are exhausted
+            if (attemptsRemaining == 0) {
+                std::cout << "Sorry, you've run out of attempts. The correct password was '" << correctPassword << "'.\n";
+            }
         }
     }
 
