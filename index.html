@@ -1,30 +1,47 @@
 #include <iostream>
 #include <string>
-#include <chrono>
-#include <thread>
+#include <ncurses.h>
+
+// Function to initialize ncurses
+void initializeNcurses() {
+    initscr(); // Initialize the library
+    start_color(); // Enable color support
+    init_pair(1, COLOR_RED, COLOR_BLACK); // Define color pair 1 (red text on black background)
+    attron(COLOR_PAIR(1)); // Activate color pair 1
+}
+
+// Function to close ncurses
+void closeNcurses() {
+    attroff(COLOR_PAIR(1)); // Deactivate color pair 1
+    endwin(); // End the library
+}
 
 // Function to clear the console screen
 void clearScreen() {
-    std::cout << "\033[2J\033[H";
+    clear();
 }
 
 int main() {
     const std::string correctPassword = "CURSED";
     int attemptsRemaining = 3;
 
+    initializeNcurses(); // Initialize ncurses
+
     while (attemptsRemaining > 0) {
         clearScreen(); // Clear the console screen
 
         // Display the interface
-        std::cout << "\033[1;31m"; // Set text color to red
-        std::cout << "==============================\n";
-        std::cout << "          PASSWORD GAME        \n";
-        std::cout << "==============================\n\n";
+        printw("==============================\n");
+        printw("          PASSWORD GAME        \n");
+        printw("==============================\n\n");
 
-        std::cout << "Attempts remaining: " << attemptsRemaining << "\n\n";
+        printw("Attempts remaining: %d\n\n", attemptsRemaining);
 
-        std::cout << "\033[1;31m"; // Set text color to red
-        std::cout << "      Enter password       \n\n";
+        attron(COLOR_PAIR(1)); // Set text color to red
+        printw("      Enter password       \n\n");
+        attroff(COLOR_PAIR(1)); // Reset text color
+
+        refresh(); // Refresh the screen
 
         std::string userGuess;
         std::cout << "> ";
@@ -33,27 +50,32 @@ int main() {
         // Check if the password is correct
         if (userGuess == correctPassword) {
             clearScreen();
-            std::cout << "\033[1;32m"; // Set text color to green
-            std::cout << "Congratulations! You guessed the correct password.\n";
+            attron(COLOR_PAIR(1)); // Set text color to red
+            printw("Congratulations! You guessed the correct password.\n");
+            attroff(COLOR_PAIR(1)); // Reset text color
             break;
         } else {
             attemptsRemaining--;
 
             // Display remaining attempts
-            std::cout << "\033[1;33m"; // Set text color to yellow
-            std::cout << "\nIncorrect password. Attempts remaining: " << attemptsRemaining << "\n";
+            attron(COLOR_PAIR(1)); // Set text color to red
+            printw("\nIncorrect password. Attempts remaining: %d\n", attemptsRemaining);
+            attroff(COLOR_PAIR(1)); // Reset text color
 
             // Check if attempts are exhausted
             if (attemptsRemaining == 0) {
                 clearScreen();
-                std::cout << "\033[1;31m"; // Set text color to red
-                std::cout << "Sorry, you've run out of attempts. The correct password was '" << correctPassword << "'.\n";
+                attron(COLOR_PAIR(1)); // Set text color to red
+                printw("Sorry, you've run out of attempts. The correct password was '%s'.\n", correctPassword.c_str());
+                attroff(COLOR_PAIR(1)); // Reset text color
             }
 
             // Pause for a moment before clearing the screen
             std::this_thread::sleep_for(std::chrono::seconds(1));
         }
     }
+
+    closeNcurses(); // Close ncurses
 
     return 0;
 }
