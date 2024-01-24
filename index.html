@@ -44,7 +44,8 @@ int main() {
         refresh(); // Refresh the screen
 
         std::string userGuess;
-        std::cout << "> ";
+        printw("> ");
+        refresh();
         std::cin >> userGuess;
 
         // Check if the password is correct
